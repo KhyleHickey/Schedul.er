@@ -1,27 +1,23 @@
 import os
 import random
-
+from tinydb import TinyDB, Query
 from discord.ext import commands
 from dotenv import load_dotenv
-
-load_dotenv()
+import discord
+load_dotenv() #!add 2021-11-0 "Hello world"="A test input"
 TOKEN = os.getenv('DISCORD_TOKEN')
-
+client=discord.Client()
+db=TinyDB('db.json')
 bot = commands.Bot(command_prefix='!')
 
-@bot.command(name='timetable')
-async def _command(ctx):
-   
+@bot.command(name='add')
+async def _command(ctx,*args):
+        #!add {date} {time} {event} {description}
+        #db.insert({'user':ctx.author.id})
+        response = ""
 
-    response = "Can you enter the times(in UTC) in your timetable seperated with commas? For example:\n`09:00,09:40,10:20`\n"
-    await ctx.send(response)
-    def check(msg):
-        return msg.author == ctx.author and msg.channel == ctx.channel and \
-        msg.content.lower() in ["y", "n"]
-    msg = await bot.wait_for("message", check=check)
-    if msg.content.lower() == "y":
-        await ctx.send("You said yes!")
-    else:
-        await ctx.send("You said no!")
+        db.insert({'user':ctx.author.id,'date':args[0],'time':args[1],'event':args[2],'desc':args[3]})
+
+        await ctx.channel.send("Event:"+args[2]+" created")
 
 bot.run(TOKEN)
